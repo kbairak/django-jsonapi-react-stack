@@ -1,0 +1,4 @@
+.envrc
+__pycache__/
+backend-db/docker/db_data
+tags

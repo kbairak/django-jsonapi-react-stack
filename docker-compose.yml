@@ -1,0 +1,41 @@
+---
+
+services:
+  jsonapi-load-balancer:
+    build:
+      context: ./load_balancer
+    volumes:
+      - './load_balancer/nginx.conf:/etc/nginx/nginx.conf'
+    ports:
+      - '8000:80'
+    depends_on:
+      - jsonapi-backend-web
+      - jsonapi-frontend
+
+  jsonapi-backend-web:
+    build:
+      context: ./backend
+    volumes:
+      - './backend/src:/app'
+    stdin_open: true
+    tty: true
+    depends_on:
+      - 'jsonapi-backend-db'
+
+  jsonapi-backend-db:
+    image: 'postgres:15.2'
+    environment:
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - './backend-db/docker/db_data:/var/lib/postgresql/data'
+  jsonapi-frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - './frontend/public:/app/public'
+      - './frontend/src:/app/src'
+      - './frontend/index.html:/app/index.html'
+      - './frontend/package.json:/app/package.json'
+      - './frontend/vite.config.js:/app/vite.config.js'
+    stdin_open: true
+    tty: true
